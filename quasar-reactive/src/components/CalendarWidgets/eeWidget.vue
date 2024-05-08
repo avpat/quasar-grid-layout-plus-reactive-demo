@@ -15,7 +15,7 @@
              @keydown.enter="validate"
         > {{ props.widget.title }}</div>
         <div class="text-subtitle2">{{ props.widget.subtitle }}</div>
-        <p>Parent bound v-model is: {{ model }}</p>
+
       </q-card-section>
 
       <q-separator ></q-separator>
@@ -32,14 +32,10 @@
 import { defineProps, ref, watch } from 'vue';
 
 const props = defineProps(['widget']);
-const model = defineModel();
 
 const title = ref(props.widget.title);
 const titleElement = ref(null);
 
-function updateTitle() {
-  model.value = title.value;
-}
 function validate(event : Event) {
   (event.target as HTMLInputElement).blur();
   title.value = titleElement.value;
