@@ -11,6 +11,8 @@ export interface Widget {
   id: number;
   title: string;
   subtitle: string;
+  quantity: number;
+  price: number;
   actionText: string;
   actionUrl: string;
   backgroundColor?: string;

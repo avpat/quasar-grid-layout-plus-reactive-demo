@@ -11,8 +11,14 @@
       </div>
     </div>
     <div class="content">
-      <q-card-section class="bg-orange">
+      <q-card-section class="bg-blue">
+        SHOPPING CART:
+        <ul>
+          <li>  Total basket value: {{ totalPrice }}</li>
+          <li>  Total items in basket: {{ totalQuantity }}</li>
+        </ul>
         <div> You have clicked on {{ count }} widgets</div>
+        <p class="q-notification" id="title"></p>
       </q-card-section>
       <button @click="decreaseWidth">Decrease Width</button>
       <button @click="increaseWidth">Increase Width</button>
@@ -38,9 +44,11 @@
         >
           <span class="removeItem" @click="removeItem(item.i)">x</span>
           <eeWidget
+            ref="child"
             v-model="widgets[item.i]"
             v-bind:widget="widgets[item.i]"
             @click="increment"
+            @titleChanged="showAlert"
           />
         </grid-item>
       </grid-layout>
@@ -49,12 +57,14 @@
 </template>
 <script setup lang="ts">
 
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { GridItem, GridLayout } from 'vue3-grid-layout-next';
 import { layoutGrid } from 'src/data/layoutGrid';
+import { useQuasar } from 'quasar';
 import eeWidget from '../CalendarWidgets/eeWidget.vue';
 import { widgets as widgetData } from '../../data/widgetData';
 
+const $q = useQuasar();
 const layout = ref(JSON.parse(JSON.stringify(layoutGrid)));
 const draggable = ref(true);
 const resizable = ref(true);
@@ -62,6 +72,23 @@ const compact = ref(false);
 const widgets = ref(JSON.parse(JSON.stringify(widgetData)));
 const index = ref(0);
 const count = ref(0);
+const child = ref(eeWidget);
+const widgetId = ref('');
+
+onMounted(() => {
+  // console.log(child.value);
+  // console.log(child.value.$el);
+  //  this.index = this.layout.length;
+});
+const showAlert = (id:any) => {
+  widgetId.value = id;
+  $q.notify({
+    message: `Parent has been notified that the Title changed for the child widget # ${id}`,
+    color: 'red',
+    position: 'top',
+    timeout: 6000,
+  });
+};
 
 const increment = () => {
   count.value += 1;
@@ -96,6 +123,10 @@ const addItem = () => {
 const removeItem = (i: string) => {
   layout.value = layout.value.filter((item: any) => item.i !== i);
 };
+
+// eslint-disable-next-line max-len
+const totalQuantity = computed(() => widgets.value.reduce((acc:any, item:any) => acc + item.quantity, 0));
+const totalPrice = computed(() => widgets.value.reduce((acc:any, item:any) => acc + item.price, 0));
 
 onMounted(() => {
   index.value = layout.value.length;
