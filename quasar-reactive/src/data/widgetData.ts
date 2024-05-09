@@ -115,7 +115,7 @@ export const widgets = reactive([
     subtitle: 'Subtitle no 10',
     price: 2.50,
     quantity: 1,
-    actionText: 'Add to cart',
+    actionText: ' cart',
     actionUrl: 'action 10',
     backgroundColor: '#679dd3',
     textColor: '#fff',

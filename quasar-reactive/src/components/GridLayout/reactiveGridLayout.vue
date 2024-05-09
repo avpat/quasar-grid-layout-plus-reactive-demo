@@ -23,7 +23,7 @@
       <button @click="decreaseWidth">Decrease Width</button>
       <button @click="increaseWidth">Increase Width</button>
       <button @click="addItem">Add an item</button>
-      <input type="checkbox" v-model="compact"/> Compact
+      <input type="checkbox" v-model="compact"/> Vertical Compact mode
       <br/>
       <grid-layout v-model:layout="layout"
                    :col-num="12"
@@ -49,6 +49,9 @@
             v-bind:widget="widgets[item.i]"
             @click="increment"
             @titleChanged="showAlert"
+            @quantityChanged="updateQuantity"
+            quantityElement="quantityElement"
+            :get-ref="(el:any) => { wrapper = el }"
           />
         </grid-item>
       </grid-layout>
@@ -58,13 +61,14 @@
 <script setup lang="ts">
 
 import { computed, onMounted, ref } from 'vue';
-import { GridItem, GridLayout } from 'vue3-grid-layout-next';
+import { GridItem, GridLayout } from 'grid-layout-plus';
 import { layoutGrid } from 'src/data/layoutGrid';
 import { useQuasar } from 'quasar';
 import eeWidget from '../CalendarWidgets/eeWidget.vue';
 import { widgets as widgetData } from '../../data/widgetData';
 
 const $q = useQuasar();
+const wrapper = ref();
 const layout = ref(JSON.parse(JSON.stringify(layoutGrid)));
 const draggable = ref(true);
 const resizable = ref(true);
@@ -74,6 +78,7 @@ const index = ref(0);
 const count = ref(0);
 const child = ref(eeWidget);
 const widgetId = ref('');
+const quantityElement = ref('');
 
 onMounted(() => {
   // console.log(child.value);
@@ -82,12 +87,36 @@ onMounted(() => {
 });
 const showAlert = (id:any) => {
   widgetId.value = id;
+
   $q.notify({
-    message: `Parent has been notified that the Title changed for the child widget # ${id}`,
+    message: `Parent has been notified that the Title is changed for the child widget # ${id}`,
     color: 'red',
     position: 'top',
     timeout: 6000,
   });
+};
+
+const updateQuantity = (id:any) => {
+  widgetId.value = id;
+  quantityElement.value = wrapper.value.$refs.quantityElement.innerText;
+
+  $q.notify({
+    message: `Parent has been notified that the Quantity is changed for the child widget # ${quantityElement.value}`,
+    color: 'green',
+    position: 'top',
+    timeout: 6000,
+  });
+
+  // eslint-disable-next-line no-alert
+  // console.log(el.innerText);
+  // console.log(event.target.innerText);
+  //
+  // $q.notify({
+  //   message: ` The quantity has been changed on widget # ${id}`,
+  //   color: 'green',
+  //   position: 'top',
+  //   timeout: 6000,
+  // });
 };
 
 const increment = () => {
